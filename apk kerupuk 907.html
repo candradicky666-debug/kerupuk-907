@@ -1,0 +1,318 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .app { padding: 1rem 0; max-width: 680px; font-family: var(--font-sans); }
+  .header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
+  .logo { width: 44px; height: 44px; border-radius: var(--border-radius-md); background: #FAC775; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .header-text h1 { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
+  .header-text p { font-size: 13px; color: var(--color-text-secondary); margin-top: 2px; }
+  .date-row { display: flex; gap: 12px; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .date-row label { font-size: 13px; color: var(--color-text-secondary); }
+  .date-row input[type="date"], .date-row input[type="text"] { font-size: 13px; padding: 6px 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-primary); color: var(--color-text-primary); }
+  .section-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 1rem; }
+  .section-title { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .section-title i { font-size: 15px; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+  th { text-align: left; color: var(--color-text-secondary); font-weight: 500; padding: 6px 8px; border-bottom: 0.5px solid var(--color-border-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  td { padding: 4px 6px; color: var(--color-text-primary); vertical-align: middle; }
+  td input[type="number"] { width: 100%; font-size: 13px; padding: 4px 6px; border-radius: 4px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); text-align: right; }
+  td input[type="text"] { width: 100%; font-size: 13px; padding: 4px 6px; border-radius: 4px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); }
+  td.no { text-align: center; color: var(--color-text-secondary); }
+  td.calc { text-align: right; color: var(--color-text-primary); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td.total-row { font-weight: 500; border-top: 0.5px solid var(--color-border-tertiary); padding-top: 8px; }
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 13px; }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-label { color: var(--color-text-secondary); }
+  .summary-value { font-weight: 500; color: var(--color-text-primary); font-variant-numeric: tabular-nums; }
+  .biaya-grid { display: grid; gap: 8px; }
+  .biaya-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; }
+  .biaya-row label { color: var(--color-text-secondary); white-space: nowrap; }
+  .biaya-row input { width: 110px; font-size: 13px; padding: 4px 8px; border-radius: 4px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); text-align: right; }
+  .hasil-bersih { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .hasil-bersih .label { font-size: 13px; color: var(--color-text-secondary); }
+  .hasil-bersih .value { font-size: 20px; font-weight: 500; }
+  .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 1rem; }
+  .metric { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px; }
+  .metric .mlabel { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .metric .mvalue { font-size: 18px; font-weight: 500; color: var(--color-text-primary); font-variant-numeric: tabular-nums; }
+  .harga-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 13px; }
+  .harga-row label { color: var(--color-text-secondary); }
+  .harga-row input { width: 110px; font-size: 13px; padding: 4px 8px; border-radius: 4px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); text-align: right; }
+  .add-row-btn { font-size: 13px; color: var(--color-text-secondary); cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 4px 0; background: none; border: none; margin-top: 4px; }
+  .add-row-btn:hover { color: var(--color-text-primary); }
+  .del-btn { background: none; border: none; cursor: pointer; color: var(--color-text-secondary); font-size: 15px; padding: 2px 4px; }
+  .del-btn:hover { color: #D85A30; }
+  .kerupuk-dibawa-row { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-bottom: 12px; }
+  .kerupuk-dibawa-row label { color: var(--color-text-secondary); }
+  .kerupuk-dibawa-row input { width: 90px; font-size: 13px; padding: 4px 8px; border-radius: 4px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); text-align: right; }
+  .sisa-badge { font-size: 12px; padding: 2px 8px; border-radius: 20px; background: #EAF3DE; color: #3B6D11; margin-left: 4px; }
+</style>
+
+<div class="app">
+  <h2 class="sr-only">Aplikasi pencatatan penjualan kerupuk harian</h2>
+
+  <div class="header">
+    <div class="logo" aria-hidden="true">🦐</div>
+    <div class="header-text">
+      <h1>Ngampas Kerupuk</h1>
+      <p>Pencatatan penjualan harian</p>
+    </div>
+  </div>
+
+  <div class="date-row">
+    <label for="tgl">Tanggal</label>
+    <input type="date" id="tgl">
+    <label for="nama">Nama penjual</label>
+    <input type="text" id="nama" placeholder="Nama..." style="width:140px;">
+  </div>
+
+  <div class="metric-grid">
+    <div class="metric"><div class="mlabel">Kerupuk keluar</div><div class="mvalue" id="m-keluar">0</div></div>
+    <div class="metric"><div class="mlabel">Terjual</div><div class="mvalue" id="m-terjual">0</div></div>
+    <div class="metric"><div class="mlabel">BS / sisa</div><div class="mvalue" id="m-bs">0</div></div>
+    <div class="metric"><div class="mlabel">Total omzet</div><div class="mvalue" id="m-omzet">Rp0</div></div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><i class="ti ti-package" aria-hidden="true"></i> Stok & harga</div>
+    <div class="kerupuk-dibawa-row">
+      <label for="stok-dibawa">Kerupuk yang dibawa (pcs)</label>
+      <input type="number" id="stok-dibawa" min="0" value="0">
+      <span id="sisa-badge" class="sisa-badge" style="display:none;">sisa 0</span>
+    </div>
+    <div class="harga-row">
+      <label for="harga">Harga satuan (Rp)</label>
+      <input type="number" id="harga" value="8000" min="0">
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><i class="ti ti-list-details" aria-hidden="true"></i> Detail penjualan per pelanggan</div>
+    <div class="table-wrap">
+      <table id="tbl">
+        <colgroup>
+          <col style="width:30px">
+          <col style="width:120px">
+          <col style="width:80px">
+          <col style="width:70px">
+          <col style="width:60px">
+          <col style="width:80px">
+          <col style="width:80px">
+          <col style="width:28px">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama toko</th>
+            <th>Keluar</th>
+            <th>BS</th>
+            <th>Terjual</th>
+            <th>Total</th>
+            <th>Catatan</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+        <tfoot>
+          <tr>
+            <td class="no total-row">—</td>
+            <td class="total-row" style="font-size:12px;color:var(--color-text-secondary);">Total</td>
+            <td class="calc total-row" id="tot-keluar">0</td>
+            <td class="calc total-row" id="tot-bs">0</td>
+            <td class="calc total-row" id="tot-terjual">0</td>
+            <td class="calc total-row" id="tot-total">Rp0</td>
+            <td colspan="2" class="total-row"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <button class="add-row-btn" onclick="addRow()"><i class="ti ti-plus" aria-hidden="true"></i> Tambah baris</button>
+  </div>
+
+  <div class="summary-grid">
+    <div class="section-card">
+      <div class="section-title"><i class="ti ti-receipt" aria-hidden="true"></i> Biaya operasional</div>
+      <div class="biaya-grid">
+        <div class="biaya-row"><label>Bensin (Rp)</label><input type="number" id="b-bensin" value="0" min="0" oninput="recalc()"></div>
+        <div class="biaya-row"><label>Parkir (Rp)</label><input type="number" id="b-parkir" value="0" min="0" oninput="recalc()"></div>
+        <div class="biaya-row"><label>Biaya lainnya (Rp)</label><input type="number" id="b-lain" value="0" min="0" oninput="recalc()"></div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title"><i class="ti ti-chart-bar" aria-hidden="true"></i> Ringkasan</div>
+      <div class="summary-row"><span class="summary-label">Kerupuk dibawa</span><span class="summary-value" id="s-dibawa">0</span></div>
+      <div class="summary-row"><span class="summary-label">Kerupuk keluar</span><span class="summary-value" id="s-keluar">0</span></div>
+      <div class="summary-row"><span class="summary-label">Kerupuk sisa</span><span class="summary-value" id="s-sisa">0</span></div>
+      <div class="summary-row"><span class="summary-label">Kerupuk BS</span><span class="summary-value" id="s-bs">0</span></div>
+      <div class="summary-row"><span class="summary-label">Terjual</span><span class="summary-value" id="s-terjual">0</span></div>
+      <div class="summary-row"><span class="summary-label">Harga satuan</span><span class="summary-value" id="s-harga">Rp8.000</span></div>
+      <div class="summary-row"><span class="summary-label">Hasil kotor</span><span class="summary-value" id="s-hasil">Rp0</span></div>
+      <div class="summary-row"><span class="summary-label">Total biaya</span><span class="summary-value" id="s-biaya">Rp0</span></div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="hasil-bersih">
+      <span class="label">Hasil bersih</span>
+      <span class="value" id="hasil-bersih" style="color:#1D9E75;">Rp0</span>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <button onclick="exportPDF()" style="padding:10px 16px;border:none;border-radius:8px;cursor:pointer;">
+      Export PDF
+    </button>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  let rows = [];
+  let nextId = 1;
+
+  document.getElementById('tgl').value = new Date().toISOString().split('T')[0];
+
+  function fmt(n) {
+    return 'Rp' + Math.round(n).toLocaleString('id-ID');
+  }
+
+  function addRow() {
+    rows.push({ id: nextId++, toko: '', keluar: 0, bs: 0, note: '' });
+    renderTable();
+    recalc();
+  }
+
+  function removeRow(id) {
+    rows = rows.filter(r => r.id !== id);
+    renderTable();
+    recalc();
+  }
+
+  function updateRow(id, field, val) {
+    const row = rows.find(r => r.id === id);
+    if (!row) return;
+    if (field === 'toko' || field === 'note') row[field] = val;
+    else row[field] = parseInt(val) || 0;
+    recalcOnly();
+    const harga = parseInt(document.getElementById('harga').value) || 0;
+    rows.forEach((r, i) => {
+      const terjual = Math.max(0, r.keluar - r.bs);
+      const el = document.getElementById('calc-terjual-' + r.id);
+      const el2 = document.getElementById('calc-total-' + r.id);
+      if (el) el.textContent = terjual;
+      if (el2) el2.textContent = fmt(terjual * harga);
+    });
+    updateFooterAndSummary();
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('tbody');
+    const harga = parseInt(document.getElementById('harga').value) || 0;
+    tbody.innerHTML = '';
+    rows.forEach((r, i) => {
+      const terjual = Math.max(0, r.keluar - r.bs);
+      const total = terjual * harga;
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        `<td class="no">${i + 1}</td>` +
+        `<td><input type="text" value="${r.toko}" placeholder="Nama toko..." oninput="updateRow(${r.id},'toko',this.value)"></td>` +
+        `<td><input type="number" min="0" value="${r.keluar}" oninput="updateRow(${r.id},'keluar',this.value)"></td>` +
+        `<td><input type="number" min="0" value="${r.bs}" oninput="updateRow(${r.id},'bs',this.value)"></td>` +
+        `<td class="calc" id="calc-terjual-${r.id}">${terjual}</td>` +
+        `<td class="calc" id="calc-total-${r.id}">${fmt(total)}</td>` +
+        `<td><input type="text" value="${r.note}" placeholder="—" oninput="updateRow(${r.id},'note',this.value)"></td>` +
+        `<td><button class="del-btn" onclick="removeRow(${r.id})" title="Hapus baris"><i class="ti ti-trash" aria-hidden="true"></i></button></td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function recalcOnly() {
+    const harga = parseInt(document.getElementById('harga').value) || 0;
+    let totKeluar = 0, totBS = 0;
+    rows.forEach(r => { totKeluar += r.keluar; totBS += r.bs; });
+    return { totKeluar, totBS, totTerjual: Math.max(0, totKeluar - totBS), harga };
+  }
+
+  function updateFooterAndSummary() {
+    const { totKeluar, totBS, totTerjual, harga } = recalcOnly();
+    const totTotal = totTerjual * harga;
+    const dibawa = parseInt(document.getElementById('stok-dibawa').value) || 0;
+    const bensin = parseInt(document.getElementById('b-bensin').value) || 0;
+    const parkir = parseInt(document.getElementById('b-parkir').value) || 0;
+    const lain = parseInt(document.getElementById('b-lain').value) || 0;
+    const sisa = dibawa - totKeluar;
+    const totalBiaya = bensin + parkir + lain;
+    const hasilBersih = totTotal - totalBiaya;
+
+    document.getElementById('tot-keluar').textContent = totKeluar;
+    document.getElementById('tot-bs').textContent = totBS;
+    document.getElementById('tot-terjual').textContent = totTerjual;
+    document.getElementById('tot-total').textContent = fmt(totTotal);
+
+    document.getElementById('m-keluar').textContent = totKeluar;
+    document.getElementById('m-terjual').textContent = totTerjual;
+    document.getElementById('m-bs').textContent = totBS;
+    document.getElementById('m-omzet').textContent = fmt(totTotal);
+
+    document.getElementById('s-dibawa').textContent = dibawa;
+    document.getElementById('s-keluar').textContent = totKeluar;
+    document.getElementById('s-sisa').textContent = sisa >= 0 ? sisa : 0;
+    document.getElementById('s-bs').textContent = totBS;
+    document.getElementById('s-terjual').textContent = totTerjual;
+    document.getElementById('s-harga').textContent = fmt(harga);
+    document.getElementById('s-hasil').textContent = fmt(totTotal);
+    document.getElementById('s-biaya').textContent = fmt(totalBiaya);
+
+    const hb = document.getElementById('hasil-bersih');
+    hb.textContent = fmt(hasilBersih);
+    hb.style.color = hasilBersih >= 0 ? '#1D9E75' : '#D85A30';
+
+    const badge = document.getElementById('sisa-badge');
+    if (dibawa > 0) {
+      badge.style.display = 'inline';
+      badge.textContent = 'sisa ' + Math.max(0, sisa);
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  function recalc() {
+    renderTable();
+    updateFooterAndSummary();
+  }
+
+  document.getElementById('harga').addEventListener('input', recalc);
+  document.getElementById('stok-dibawa').addEventListener('input', updateFooterAndSummary);
+
+  for (let i = 0; i < 5; i++) addRow();
+
+function exportPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  let y = 15;
+  doc.setFontSize(16);
+  doc.text("Laporan Penjualan Kerupuk", 10, y);
+  y += 10;
+
+  doc.setFontSize(10);
+  doc.text("Tanggal: " + (document.getElementById('tgl').value || '-'), 10, y);
+  y += 6;
+  doc.text("Penjual: " + (document.getElementById('nama').value || '-'), 10, y);
+  y += 10;
+
+  doc.text("Kerupuk Dibawa: " + document.getElementById('s-dibawa').textContent, 10, y); y += 6;
+  doc.text("Terjual: " + document.getElementById('s-terjual').textContent, 10, y); y += 6;
+  doc.text("BS: " + document.getElementById('s-bs').textContent, 10, y); y += 6;
+  doc.text("Omzet: " + document.getElementById('s-hasil').textContent, 10, y); y += 6;
+  doc.text("Biaya: " + document.getElementById('s-biaya').textContent, 10, y); y += 6;
+  doc.text("Hasil Bersih: " + document.getElementById('hasil-bersih').textContent, 10, y);
+
+  doc.save("laporan-kerupuk.pdf");
+}
+
+</script>
